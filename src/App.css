@@ -1,14 +1,75 @@
 
-.body {
+body {
   background-color: #222;
-  font-family: sans-serif;
   color: white;
+  text-align: center;
 }
 
 
+#title {
+  font-family: 'Pacifico', cursive;
+  margin-bottom: 50px;
+}
 
+#clock-container {
+  text-align: center;
+}
 
+#clock {
+  height: 250px;
+  width: 250px;
 
+  border-style: solid;
+  border-color: white;
+  border-radius: 50%;
+
+  display: inline-block;
+
+  margin-bottom: 50px;
+}
+
+#buttons-container {
+  text-align: center;
+}
+
+.button {
+  margin-right: 20px;
+  margin-left: 20px;
+  
+  border-style: solid;
+  border-color: white;
+  border-width: 1px;
+  border-radius: 40%;
+
+  padding: 20px;
+}
+
+.button:hover {
+  color: #222;
+  background-color: white;
+  border-color: white;
+}
+
+/**************************************************
+ANIMATION
+**************************************************/
+.button-enter {
+  opacity: 0.01;
+}
+
+.button-enter.button-enter-active {
+  opacity: 1;
+  transition: opacity 1000ms ease-in;
+}
+
+.button-leave {
+  opacity: 1;
+}
+
+.button-leave.button-leave-active {
+  opacity: 0.01;
+  transition: opacity 1000ms ease-in;
+}
 /*************************************************
 POPUP MODAL
 ************************************************/
