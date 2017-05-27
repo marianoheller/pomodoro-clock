@@ -5,6 +5,13 @@ body {
   text-align: center;
 }
 
+.App {
+  font-family: 'Open Sans', Arial;
+}
+
+.disabled {
+  pointer-events: none;
+}
 
 #title {
   font-family: 'Pacifico', cursive;
@@ -13,6 +20,11 @@ body {
 
 #clock-container {
   text-align: center;
+  display: flex;
+  justify-content: center;
+  /* align horizontal */
+  align-items: center;
+  /* align vertical */
 }
 
 #clock {
@@ -27,6 +39,27 @@ body {
 
   margin-bottom: 50px;
   margin-top: 30px;
+
+  text-align: center;
+
+  display: flex;
+  justify-content: center; /* align horizontal */
+  align-items: center; /* align vertical */
+}
+
+.clock-span {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+}
+
+.clock-span {
+  font-size: xx-large;
+  font-family: 'Open Sans', Arial;
+}
+
+.clock-number {
+  font-size: 2em;
 }
 
 #buttons-container {
@@ -61,6 +94,17 @@ body {
 
 .ranger-val-element {
   margin: 0px 5px 0px 5px;
+  font-size: 2em;
+}
+
+.value-changer {
+    width: 30px;
+    cursor: pointer;
+}
+
+.value-changer:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: black;
 }
 /**************************************************
 ANIMATION
