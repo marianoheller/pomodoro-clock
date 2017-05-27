@@ -13,8 +13,8 @@ class App extends Component {
     this.state = {
       pomodoroState: "Stopped",
       values: {
-        session: 1,
-        break: 1
+        session: 25,
+        break: 5
       },
       clock: {
         now: new moment(),
