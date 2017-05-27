@@ -34,9 +34,9 @@ class App extends Component {
           <div className="pure-u-0 pure-u-sm-3-24 pure-u-md-6-24"></div>
           <div className="pure-u-1 pure-u-sm-18-24 pure-u-md-12-24">
             <Title></Title>
+            <RangeArea></RangeArea>
             <Clock></Clock>
             <ButtonArea setPomodoroState={this.setPomodoroState.bind(this)} pomodoroState={this.state.pomodoroState}></ButtonArea>
-            <ConfigDialog></ConfigDialog>
           </div>
           <div className="pure-u-0 pure-u-sm-3-24 pure-u-md-6-24"></div>
         </div>
@@ -138,7 +138,7 @@ class ButtonArea extends Component {
 class Button extends Component {
   render() {
     return (
-      <a className="pure-button" onClick={this.props.onClick}>
+      <a  onClick={this.props.onClick}>
         <i className={`fa fa-${this.props.type} fa-2x fa-inverse fa-fw button`} aria-hidden="true"></i>
       </a>
     )
@@ -146,16 +146,30 @@ class Button extends Component {
 }
 
 
-class ConfigDialog extends Component {
+class RangeArea extends Component {
   render() {
     return (
-      <div id="popup1" className="overlay">
-        <div className="popup">
-          <h2>Here i am</h2>
-          <a className="close" href="">&times;</a>
-          <div className="content">
-            Thank to pop me out of that button, but now i'm done so you can close this window.
-          </div>
+      <div className="pure-g">
+        <div className="pure-u-1">
+          <Ranger title="Break length"></Ranger>
+          <Ranger title="Session length"></Ranger>
+        </div>
+      </div>
+    )
+  }
+}
+
+class Ranger extends Component {
+  render() {
+    return (
+      <div className="pure-g ranger">
+        <div className="pure-u-1 ranger-titulo">
+          {this.props.title}
+        </div>
+        <div className="pure-u-1 ranger-values">
+          <div className="ranger-val-element">-</div>
+          <div className="ranger-val-element">22</div>
+          <div className="ranger-val-element">+</div>
         </div>
       </div>
     )
