@@ -179,7 +179,7 @@ class Clock extends Component {
       case "Running":
         ret = (
           <div className="clock-span">
-            <div>Study time!</div>
+            <div id="timer-label">Study time!</div>
             <div id="time-left" className="clock-number" >{`${diffMin}:${this.pad(diffSecs,2)}`}</div>
           </div>
         );
@@ -187,8 +187,8 @@ class Clock extends Component {
       case "Resting":
         ret = (
           <div className="clock-span">
-            <div>Take a break!</div>
-            <div className="clock-number" >{`${diffMin}:${this.pad(diffSecs,2)}`}</div>
+            <div id="timer-label">Take a break!</div>
+            <div id="time-left" className="clock-number" >{`${diffMin}:${this.pad(diffSecs,2)}`}</div>
           </div>
         );
         break;
@@ -197,7 +197,7 @@ class Clock extends Component {
           <div className="clock-span">
             <div className="row">
               <div className="col-md-12">
-                <div>Session</div>
+                <div id="timer-label">Session</div>
                 <div className="clock-number" >
                   <div id="session-length">
                     {this.props.pomodoroValues.session} 
@@ -247,7 +247,7 @@ class ButtonArea extends Component {
       case "Stopped":
         ret = (
         <div>
-          <Button key={this.props.pomodoroState + (i++)} onClick={this.props.setPomodoroState("Running")} type="play"></Button>
+          <Button id="start_stop" key={this.props.pomodoroState + (i++)} onClick={this.props.setPomodoroState("Running")} type="play"></Button>
           <Button key={this.props.pomodoroState + (i++)} onClick={this.props.setPomodoroState("Resting")} type="coffee"></Button>
         </div>
         );
@@ -255,7 +255,7 @@ class ButtonArea extends Component {
       case "Running":
         ret = (
         <div>
-          <Button key={this.props.pomodoroState + (i++)} onClick={this.props.setPomodoroState("Stopped")} type="stop"></Button>
+          <Button id="start_stop" key={this.props.pomodoroState + (i++)} onClick={this.props.setPomodoroState("Stopped")} type="stop"></Button>
         </div>
         );
         break;
@@ -263,7 +263,7 @@ class ButtonArea extends Component {
         ret = (
         <div>
           <Button key={this.props.pomodoroState + (i++)} onClick={this.props.setPomodoroState("Running")} type="step-forward"></Button>
-          <Button key={this.props.pomodoroState + (i++)} onClick={this.props.setPomodoroState("Stopped")} type="stop"></Button>
+          <Button id="start_stop" key={this.props.pomodoroState + (i++)} onClick={this.props.setPomodoroState("Stopped")} type="stop"></Button>
         </div>
         );
         break;
@@ -304,7 +304,7 @@ class ButtonArea extends Component {
 class Button extends Component {
   render() {
     return (
-      <a  onClick={this.props.onClick}>
+      <a id={this.props.id} onClick={this.props.onClick}>
         <i className={`fa fa-${this.props.type} fa-2x fa-inverse fa-fw button`} aria-hidden="true"></i>
       </a>
     )
@@ -365,12 +365,12 @@ class Ranger extends Component {
     const { idVal } = this.props;
     return (
       <div className={`pure-g ranger ${this.isDisabled()}`}>
-        <div  id={`${idVal}-label`} className="pure-u-1 ranger-titulo">
+        <div id={`${idVal}-label`} className="pure-u-1 ranger-titulo">
           {this.props.title}
         </div>
         <div className="pure-u-1 ranger-values">
           <div id={`${idVal}-decrement`} onClick={this.handleClick.bind(this)} className="ranger-val-element value-changer">-</div>
-          <div className="ranger-val-element">{this.state.value}</div>
+          <div id={`${idVal}-length`}  className="ranger-val-element">{this.state.value}</div>
           <div id={`${idVal}-increment`} onClick={this.handleClick.bind(this)} className="ranger-val-element value-changer">+</div>
         </div>
       </div>
