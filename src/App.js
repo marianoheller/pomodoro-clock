@@ -60,7 +60,7 @@ class App extends Component {
         newDiffSecs = timeDiffsAux.newDiffSecs;
       }
     }
-    console.log("Tick", newPomodoroState, newDiffMin, newDiffSecs);
+    //console.log("Tick", newPomodoroState, newDiffMin, newDiffSecs);
     
     this.setState( {
       ...this.state,
@@ -173,14 +173,14 @@ class Clock extends Component {
     let ret = -1;
     const { diffMin, diffSecs } = this.props.clock;
 
-    console.log("Render", this.props.pomodoroState, diffMin, diffSecs);
+    //console.log("Render", this.props.pomodoroState, diffMin, diffSecs);
 
     switch( this.props.pomodoroState ) {
       case "Running":
         ret = (
           <div className="clock-span">
             <div>Study time!</div>
-            <div className="clock-number" >{`${diffMin}:${this.pad(diffSecs,2)}`}</div>
+            <div id="time-left" className="clock-number" >{`${diffMin}:${this.pad(diffSecs,2)}`}</div>
           </div>
         );
         break;
@@ -198,7 +198,15 @@ class Clock extends Component {
             <div className="row">
               <div className="col-md-12">
                 <div>Session</div>
-                <div className="clock-number" >{this.props.pomodoroValues.session} / {this.props.pomodoroValues.break}</div>
+                <div className="clock-number" >
+                  <div id="session-length">
+                    {this.props.pomodoroValues.session} 
+                  </div>
+                  /
+                  <div id="break-length">
+                    {this.props.pomodoroValues.break}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -309,8 +317,8 @@ class RangeArea extends Component {
     return (
       <div className="pure-g">
         <div className="pure-u-1">
-          <Ranger title="Break length" pomodoroState={this.props.pomodoroState} value={this.props.pomodoroValues.break} setValue={this.props.pomodoroSetters.break}></Ranger>
-          <Ranger title="Session length" pomodoroState={this.props.pomodoroState} value={this.props.pomodoroValues.session} setValue={this.props.pomodoroSetters.session}></Ranger>
+          <Ranger idVal="break" title="Break length" pomodoroState={this.props.pomodoroState} value={this.props.pomodoroValues.break} setValue={this.props.pomodoroSetters.break}></Ranger>
+          <Ranger idVal="session" title="Session length" pomodoroState={this.props.pomodoroState} value={this.props.pomodoroValues.session} setValue={this.props.pomodoroSetters.session}></Ranger>
         </div>
       </div>
     )
@@ -354,15 +362,16 @@ class Ranger extends Component {
   }
 
   render() {
+    const { idVal } = this.props;
     return (
       <div className={`pure-g ranger ${this.isDisabled()}`}>
-        <div className="pure-u-1 ranger-titulo">
+        <div  id={`${idVal}-label`} className="pure-u-1 ranger-titulo">
           {this.props.title}
         </div>
         <div className="pure-u-1 ranger-values">
-          <div onClick={this.handleClick.bind(this)} className="ranger-val-element value-changer">-</div>
+          <div id={`${idVal}-decrement`} onClick={this.handleClick.bind(this)} className="ranger-val-element value-changer">-</div>
           <div className="ranger-val-element">{this.state.value}</div>
-          <div onClick={this.handleClick.bind(this)} className="ranger-val-element value-changer">+</div>
+          <div id={`${idVal}-increment`} onClick={this.handleClick.bind(this)} className="ranger-val-element value-changer">+</div>
         </div>
       </div>
     )

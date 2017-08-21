@@ -5,6 +5,10 @@ body {
   text-align: center;
 }
 
+#test-suite-selector {
+  color:black;
+}
+
 .App {
   font-family: 'Open Sans', Arial;
 }
@@ -106,6 +110,11 @@ body {
   background-color: rgba(255, 255, 255, 0.2);
   color: black;
 }
+
+#session-length, #break-length {
+  display: inline-block;
+}
+
 /**************************************************
 ANIMATION
 **************************************************/
