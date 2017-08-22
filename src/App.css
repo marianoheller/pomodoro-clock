@@ -88,7 +88,8 @@ body {
   border-color: white;
 }
 
-.ranger, .ranger > div > div {
+/*.ranger, .ranger > div > div {*/
+.ranger > div > div {
   display: inline-block;
 }
 
@@ -97,7 +98,7 @@ body {
 }
 
 .ranger-val-element {
-  margin: 0px 5px 0px 5px;
+  margin: 0px 3px;
   font-size: 2em;
   user-select: none;
   cursor: default;
@@ -121,8 +122,6 @@ body {
 }
 
 #reset {
-  width: 10px;
-  height: 10px;
   cursor: pointer;
 }
 

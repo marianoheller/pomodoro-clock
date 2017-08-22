@@ -154,8 +154,8 @@ class App extends Component {
     return (
       <div className="App">
         <div className="pure-g">
-          <div className="pure-u-0 pure-u-sm-3-24 pure-u-md-6-24"></div>
-          <div className="pure-u-1 pure-u-sm-18-24 pure-u-md-12-24">
+          <div className="pure-u-0 pure-u-sm-3-24 pure-u-md-6-24 pure-u-lg-8-24"></div>
+          <div className="pure-u-1 pure-u-sm-18-24 pure-u-md-12-24 pure-u-lg-8-24">
             <Title></Title>
             <RangeArea 
               onReset={this.onReset.bind(this)} 
@@ -173,7 +173,7 @@ class App extends Component {
               pomodoroState={this.state.pomodoroState}
             ></ButtonArea>
           </div>
-          <div className="pure-u-0 pure-u-sm-3-24 pure-u-md-6-24"></div>
+          <div className="pure-u-0 pure-u-sm-3-24 pure-u-md-6-24 pure-u-lg-8-24"></div>
           <audio 
             id="beep" 
             preload="auto" 
@@ -440,7 +440,7 @@ class Ranger extends Component {
   render() {
     const { idVal } = this.props;
     return (
-      <div className={`pure-g ranger ${this.isDisabled()}`}>
+      <div className={`pure-u-9-24 ranger ${this.isDisabled()}`}>
         <div id={`${idVal}-label`} className="pure-u-1 ranger-titulo">
           {this.props.title}
         </div>
@@ -458,9 +458,11 @@ class Ranger extends Component {
 class RangeReseter extends Component {
   render() {
     return (
-      <a id="reset" onClick={this.props.onClick}>
-        <i className="fa fa-refresh fa-2x fa-inverse fa-fw " aria-hidden="true"></i>
-      </a>
+      <div className="pure-u-3-24 ranger">
+        <a id="reset" onClick={this.props.onClick}>
+          <i className="fa fa-refresh fa-2x fa-inverse fa-fw " aria-hidden="true"></i>
+        </a>
+      </div>
     )
   }
 }
