@@ -25,12 +25,30 @@ class App extends Component {
     }
   }
 
+  onReset() {
+    this.audioBeep.pause();
+    this.audioBeep.currentTime = 0;
+    this.setState({
+      pomodoroState: "Stopped",
+      values: {
+        session: 25,
+        break: 5
+      },
+      clock: {
+        now: new moment(),
+        started: new moment(),
+        diffMin: 0,
+        diffSecs: 0,
+      }
+    })
+  }
+
   calculateTimeDiff( date1, date2) {
 
     const newDiffMin = date1.diff(date2, "minutes");
     const newDiffSecs = date1.diff(date2, "seconds") % 60;
 
-    console.log("Calculated", date1.diff(date2) );
+    //console.log("Calculated", date1.diff(date2) );
 
     return { newDiffMin, newDiffSecs };
   }
@@ -139,11 +157,29 @@ class App extends Component {
           <div className="pure-u-0 pure-u-sm-3-24 pure-u-md-6-24"></div>
           <div className="pure-u-1 pure-u-sm-18-24 pure-u-md-12-24">
             <Title></Title>
-            <RangeArea pomodoroState={this.state.pomodoroState} pomodoroValues={this.state.values} pomodoroSetters={this.getValuesSetters()}></RangeArea>
-            <Clock clock={this.state.clock} pomodoroValues={this.state.values} pomodoroState={this.state.pomodoroState}></Clock>
-            <ButtonArea setPomodoroState={this.setPomodoroState.bind(this)} pomodoroState={this.state.pomodoroState}></ButtonArea>
+            <RangeArea 
+              onReset={this.onReset.bind(this)} 
+              pomodoroState={this.state.pomodoroState} 
+              pomodoroValues={this.state.values} 
+              pomodoroSetters={this.getValuesSetters()}
+            ></RangeArea>
+            <Clock 
+              clock={this.state.clock} 
+              pomodoroValues={this.state.values} 
+              pomodoroState={this.state.pomodoroState}
+            ></Clock>
+            <ButtonArea 
+              setPomodoroState={this.setPomodoroState.bind(this)} 
+              pomodoroState={this.state.pomodoroState}
+            ></ButtonArea>
           </div>
           <div className="pure-u-0 pure-u-sm-3-24 pure-u-md-6-24"></div>
+          <audio 
+            id="beep" 
+            preload="auto" 
+            src="https://goo.gl/65cBl1"
+            ref={(audio) => { this.audioBeep = audio; }} 
+          />
         </div>
       </div>
     );
@@ -172,6 +208,7 @@ class Clock extends Component {
   getClockCount() {
     let ret = -1;
     const { diffMin, diffSecs } = this.props.clock;
+    const { pomodoroValues } = this.props;
 
     //console.log("Render", this.props.pomodoroState, diffMin, diffSecs);
 
@@ -180,7 +217,16 @@ class Clock extends Component {
         ret = (
           <div className="clock-span">
             <div id="timer-label">Study time!</div>
-            <div id="time-left" className="clock-number" >{`${diffMin}:${this.pad(diffSecs,2)}`}</div>
+            <div 
+              id="time-left" 
+              className="clock-number" 
+            >
+            {`
+            ${this.pad(pomodoroValues.session - 1 - diffMin,2)}
+            :
+            ${this.pad(60 - diffSecs,2)}
+            `}
+            </div>
           </div>
         );
         break;
@@ -188,7 +234,16 @@ class Clock extends Component {
         ret = (
           <div className="clock-span">
             <div id="timer-label">Take a break!</div>
-            <div id="time-left" className="clock-number" >{`${diffMin}:${this.pad(diffSecs,2)}`}</div>
+            <div 
+              id="time-left" 
+              className="clock-number" 
+            >
+            {`
+            ${this.pad(pomodoroValues.break - 1 - diffMin,2)}
+            :
+            ${this.pad(60 - diffSecs,2)}
+            `}
+            </div>
           </div>
         );
         break;
@@ -200,11 +255,11 @@ class Clock extends Component {
                 <div id="timer-label">Session</div>
                 <div className="clock-number" >
                   <div id="session-length">
-                    {this.props.pomodoroValues.session} 
+                    {pomodoroValues.session} 
                   </div>
                   /
                   <div id="break-length">
-                    {this.props.pomodoroValues.break}
+                    {pomodoroValues.break}
                   </div>
                 </div>
               </div>
@@ -317,8 +372,21 @@ class RangeArea extends Component {
     return (
       <div className="pure-g">
         <div className="pure-u-1">
-          <Ranger idVal="break" title="Break length" pomodoroState={this.props.pomodoroState} value={this.props.pomodoroValues.break} setValue={this.props.pomodoroSetters.break}></Ranger>
-          <Ranger idVal="session" title="Session length" pomodoroState={this.props.pomodoroState} value={this.props.pomodoroValues.session} setValue={this.props.pomodoroSetters.session}></Ranger>
+          <Ranger 
+            idVal="session" 
+            title="Session length" 
+            pomodoroState={this.props.pomodoroState} 
+            value={this.props.pomodoroValues.session} 
+            setValue={this.props.pomodoroSetters.session}
+          ></Ranger>
+          <RangeReseter onClick={this.props.onReset}></RangeReseter>
+          <Ranger 
+            idVal="break" 
+            title="Break length" 
+            pomodoroState={this.props.pomodoroState} 
+            value={this.props.pomodoroValues.break} 
+            setValue={this.props.pomodoroSetters.break}
+          ></Ranger>
         </div>
       </div>
     )
@@ -334,12 +402,20 @@ class Ranger extends Component {
     }
   }
 
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      ...this.state,
+      value: nextProps.value,
+    });
+  }
+
   handleClick(e) {
     const simbol = e.target.textContent;
     let newValue = this.state.value;
     switch (simbol) {
       case "+":
         newValue++;
+        newValue = newValue > 60 ? 60 : newValue;
         break;
       case "-":
         newValue--;
@@ -374,6 +450,17 @@ class Ranger extends Component {
           <div id={`${idVal}-increment`} onClick={this.handleClick.bind(this)} className="ranger-val-element value-changer">+</div>
         </div>
       </div>
+    )
+  }
+}
+
+
+class RangeReseter extends Component {
+  render() {
+    return (
+      <a id="reset" onClick={this.props.onClick}>
+        <i className="fa fa-refresh fa-2x fa-inverse fa-fw " aria-hidden="true"></i>
+      </a>
     )
   }
 }
