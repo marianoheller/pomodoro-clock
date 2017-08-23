@@ -19502,18 +19502,20 @@ var FCC_Global =
 	  }
 
 	  function getMinutes(str) {
-	    var matches = /^(\d{1,4})\s?([\.:,\/]\s?\d{2}.*)?$/g.exec(str);
-	    return matches[1];
+		/* var matches = /^(\d{1,4})\s?([\.:,\/]\s?\d{2}.*)?$/g.exec(str);
+		return matches[1]; */
+		return str.split(":").shift();
 	  }
 
 	  function getSeconds(str) {
-	    var matches = /^\d{1,4}\s?:\s?(\d{2})/g.exec(str);
-	    return matches[1];
+	    /* var matches = /^\d{1,4}\s?:\s?(\d{2})/g.exec(str);
+		return matches[1]; */
+		return str.split(":").pop();
 	  }
 
 	  function observeElement(elementId, callback) {
 	    // select the target node
-	    var target = document.getElementById(elementId);
+		var target = document.getElementById(elementId);
 
 	    // create an observer instance
 	    var observer = new MutationObserver(function (mutations) {
@@ -19635,38 +19637,39 @@ var FCC_Global =
 	        clickButtonsById(Array(60).fill(_break_min));
 	        // start the pomodoro
 			clickButtonsById([_start_stop]);
-			//FCC_Global.assert.strictEqual(document.getElementById("time-left").innerHTML, "00:00", "A value of 00:00 is not displayed");
-	        return new Promise(function (resolve, reject) {
-	          var timeLeft = document.getElementById("time-left");
-	          var observer = observeElement("time-left", function (modType) {
-	            if (timeLeft.innerHTML === "00:00") {
-	              // once timer has reached zero wait 1.5 seconds then reset and see if every default value is reset
-	              setTimeout(function (_) {
-	                resetTimer();
-	                var timerLabelAfterReset = document.getElementById('timer-label').innerText;
-	                var secondsAfterReset = getSeconds(document.getElementById("time-left").innerHTML);
+			setTimeout(function (_) {
+				return new Promise(function (resolve, reject) {
+					var timeLeft = document.getElementById("time-left").innerHTML;
+					var observer = observeElement("time-left", function (modType) {
+						if (timeLeft === "00:00") {
+							// once timer has reached zero wait 1.5 seconds then reset and see if every default value is reset
+							setTimeout(function (_) {
+								resetTimer();
+								var timerLabelAfterReset = document.getElementById('timer-label').innerText;
+								var secondsAfterReset = getSeconds(document.getElementById("time-left").innerHTML);
 
-	                // see if timer label changed back
-	                if (orignalTimerLabel !== timerLabelAfterReset) {
-	                  reject(new Error("Default timer label was not properly reset"));
-	                }
+								// see if timer label changed back
+								if (orignalTimerLabel !== timerLabelAfterReset) {
+									reject(new Error("Default timer label was not properly reset"));
+								}
 
-	                // wait another 1.5 seconds to be sure value has not changed (pomodoro is stopped)
-	                setTimeout(function (_) {
-	                  var breakLengthAfterResetIsCorrect = document.getElementById("break-length").innerHTML == 5;
-	                  var sessionLengthAfterResetIsCorrect = document.getElementById("session-length").innerHTML == 25;
-	                  if (!breakLengthAfterResetIsCorrect || !sessionLengthAfterResetIsCorrect) {
-	                    reject(new Error("Default values for break length and session length were not properly reset"));
-	                    return;
-	                  }
-	                  var secondsAfterAWhile = getSeconds(document.getElementById("time-left").innerHTML);
-	                  if (secondsAfterReset === secondsAfterAWhile) resolve();else reject(new Error("Pomodoro has paused but time continued elapsing"));
-	                }, 1500);
-	              }, 1500);
-	              observer.disconnect();
-	            }
-	          });
-	        });
+								// wait another 1.5 seconds to be sure value has not changed (pomodoro is stopped)
+								setTimeout(function (_) {
+									var breakLengthAfterResetIsCorrect = document.getElementById("break-length").innerHTML == 5;
+									var sessionLengthAfterResetIsCorrect = document.getElementById("session-length").innerHTML == 25;
+									if (!breakLengthAfterResetIsCorrect || !sessionLengthAfterResetIsCorrect) {
+										reject(new Error("Default values for break length and session length were not properly reset"));
+										return;
+									}
+									var secondsAfterAWhile = getSeconds(document.getElementById("time-left").innerHTML);
+									if (secondsAfterReset === secondsAfterAWhile) resolve();else reject(new Error("Pomodoro has paused but time continued elapsing"));
+								}, 1500);
+							}, 1500);
+							observer.disconnect();
+						}
+					});
+				});
+			}, 1500 );
 	      });
 
 	      it('12. When I click the element with the id of "break-decrement", the value within ' + 'id="break-length" decrements by a value of 1, and I can see the updated value.', function () {
@@ -19718,26 +19721,30 @@ var FCC_Global =
 	      });
 
 	      it('18. When I first click the element with id="start_stop", the timer should begin running from the value currently displayed in id="session-length", even if the value has been incremented or decremented from the original value of 25.', function () {
+			this.timeout(2500);
 			clickButtonsById([_start_stop]);
 			setTimeout(function (_) {
-	            FCC_Global.assert.strictEqual(getMinutes(document.getElementById("time-left").innerHTML), document.getElementById("session-length").innerHTML);
+				const timeLeft = document.getElementById("time-left").innerHTML;
+				const sessionLength = document.getElementById("session-length").innerHTML;
+	            FCC_Global.assert.equal(getMinutes(timeLeft), sessionLength - 1);
 			}, 500);
 	      });
 
 	      it('19. If the timer is running, the element with the id of "time-left" should display the remaining time in mm:ss format (decrementing by a value of 1 and updating the display every 1000ms).', function () {
-	        this.timeout(2500);
+	        this.timeout(5000);
 	        // start the pomodoro
 			clickButtonsById([_start_stop]);
 			setTimeout(function (_) {
 				var secondsBefore = getSeconds(document.getElementById("time-left").innerHTML);
 				return new Promise(function (resolve, reject) {
-				// wait 1.5 seconds then see if displayed time has changed (decremented)
-				setTimeout(function (_) {
-					var secondsAfter = getSeconds(document.getElementById("time-left").innerHTML);
-					if (secondsAfter > secondsBefore) resolve();else reject(new Error("Pomodoro has started but time displayed is not changing"));
-				}, 1500);
+					// wait 1.5 seconds then see if displayed time has changed (decremented)
+					setTimeout(function (_) {
+						var time = document.getElementById("time-left").innerHTML;
+						var secondsAfter = getSeconds(time);
+						if (secondsAfter > secondsBefore) resolve();else reject(new Error("Pomodoro has started but time displayed is not changing"));
+					}, 2000);
 				});
-			}, 1500);
+			}, 1000);
 	      });
 
 	      it('20. If the timer is running and I click the element with id="start_stop", the countdown should pause.', function () {
@@ -19767,7 +19774,7 @@ var FCC_Global =
 	      });
 
 	      it('21. If the timer is paused and I click the element with id="start_stop", the countdown should resume running from the point at which it was paused.', function () {
-	        this.timeout(5000);
+	        this.timeout(9000);
 	        // start the pomodoro
 			clickButtonsById([_start_stop]);
 			setTimeout(function (_) {
@@ -19777,25 +19784,25 @@ var FCC_Global =
 					setTimeout(function (_) {
 						var secondsAfter = getSeconds(document.getElementById("time-left").innerHTML);
 						if (secondsAfter === secondsBefore) {
-						reject(new Error("Pomodoro has started but time displayed is not changing"));
-						return;
+							reject(new Error("Pomodoro has started but time displayed is not changing"));
+							return;
 						}
 						// Pause the pomodoro
 						clickButtonsById([_start_stop]);
 						// wait another 1.5 seconds to be sure value has not changed
 						setTimeout(function (_) {
-						var secondsAfterPause = getSeconds(document.getElementById("time-left").innerHTML);
-						if (secondsAfter !== secondsAfterPause) {
-							reject(new Error("Pomodoro has paused but time continued elapsing"));
-							return;
-						}
-						// Resume the pomodoro
-						clickButtonsById([_start_stop]);
-						// wait another 1.5 seconds to be sure time is decrementing again
-						setTimeout(function (_) {
-							var secondsAfterResume = getSeconds(document.getElementById("time-left").innerHTML);
-							if (secondsAfterPause > secondsAfterResume) resolve();else reject(new Error("Pomodoro has resumed but displayed time is not changing"));
-						}, 1500);
+							var secondsAfterPause = getSeconds(document.getElementById("time-left").innerHTML);
+							if (secondsAfter !== secondsAfterPause) {
+								reject(new Error("Pomodoro has paused but time continued elapsing"));
+								return;
+							}
+							// Resume the pomodoro
+							clickButtonsById([_start_stop]);
+							// wait another 1.5 seconds to be sure time is decrementing again
+							setTimeout(function (_) {
+								var secondsAfterResume = getSeconds(document.getElementById("time-left").innerHTML);
+								if (secondsAfterPause > secondsAfterResume) resolve();else reject(new Error("Pomodoro has resumed but displayed time is not changing"));
+							}, 1500);
 						}, 1500);
 					}, 1500);
 				});
