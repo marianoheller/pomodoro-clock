@@ -19810,31 +19810,37 @@ var FCC_Global =
 	      });
 
 	      it('22. When a session countdown reaches zero (NOTE: timer MUST reach 00:00), and a new countdown begins, the element with the id of "timer-label" should display a string indicating a break has begun.', function () {
-	        this.timeout(5000);
+	        this.timeout(65000);
 	        // we decrement session time to the minimum (1 minute)
 	        clickButtonsById(Array(60).fill(_sesh_min));
 	        // start the pomodoro
 			clickButtonsById([_start_stop]);
 			return new Promise(function (resolve, reject) {
-				var timeLeft = document.getElementById("time-left");
+
 				var breakLength = document.getElementById("break-length");
 				// Save label to test that it has changed below
 				var sessionLabel = document.getElementById("timer-label").innerHTML;
 				var shouldBeInBreak = false;
 				var observer = observeElement("time-left", function (modType) {
-					if (timeLeft.innerHTML === "00:00") {
-					shouldBeInBreak = true;
-					} else {
-					if (parseInt(timeLeft.innerHTML.slice(0, 2)) > 5) {
-						reject(new Error("Test timed out because Break time didn't start with the correct value: " + (parseInt(getMinutes(timeLeft.innerHTML)) + 1) + " instead of " + breakLength.innerHTML));
-					} else if (shouldBeInBreak) {
-						if (document.getElementById("timer-label").innerHTML !== sessionLabel) {
-						resolve();
-						} else {
-						reject(new Error("Timer has reached zero but didn't switch to Break time"));
+
+					var timeLeft = document.getElementById("time-left").innerHTML;
+					timeLeft = timeLeft.split("").filter( (e) => /\:|[0-9]/.exec(e) ).join("");
+					if (timeLeft === "00:00") {
+						shouldBeInBreak = true;
+					} 
+					else {
+						if (parseInt(getMinutes(timeLeft)) > 5) {
+							reject(new Error("Test timed out because Break time didn't start with the correct value: " + (parseInt(getMinutes(timeLeft)) + 1) + " instead of " + breakLength.innerHTML));
+						} 
+						else if (shouldBeInBreak) {
+							if (document.getElementById("timer-label").innerHTML !== sessionLabel) {
+								resolve();
+							} 
+							else {
+								reject(new Error("Timer has reached zero but didn't switch to Break time"));
+							}
+							observer.disconnect();
 						}
-						observer.disconnect();
-					}
 					}
 				});
 			});
@@ -19884,7 +19890,7 @@ var FCC_Global =
 	      });
 
 	      it('24. When a break countdown reaches zero (NOTE: timer MUST reach 00:00), and a new countdown begins, the element with the id of "timer-label" should display a string indicating a session has begun.', function () {
-	        this.timeout(65000);
+	        this.timeout(122000);
 	        // we decrement session length and break length to the minimum (1 minute)
 	        clickButtonsById(Array(60).fill(_sesh_min));
 	        clickButtonsById(Array(60).fill(_break_min));
@@ -19900,13 +19906,15 @@ var FCC_Global =
 					if (timeLeft === "00:00") {
 						if (!shouldBeInBreak && !shouldBeInSessionAgain) {
 							shouldBeInBreak = true;
-						} else {
+						} 
+						else {
 							shouldBeInSessionAgain = true;
 							shouldBeInBreak = false;
 							// when in break, save 'break' label to var, then test below that label has changed
 							breakLabel = document.getElementById("timer-label").innerHTML;
 						}
-					} else {
+					}
+					else {
 						if (shouldBeInSessionAgain) {
 							if (document.getElementById("timer-label").innerHTML !== breakLabel) {
 								resolve();
