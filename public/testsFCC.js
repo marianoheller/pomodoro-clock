@@ -19903,6 +19903,9 @@ var FCC_Global =
 				var observer = observeElement("time-left", function (modType) {
 					var timeLeft = document.getElementById("time-left").innerHTML;
 					timeLeft = timeLeft.split("").filter( (e) => /\:|[0-9]/.exec(e) ).join("");
+					console.log("timeLeft", timeLeft);
+					console.log("inBreak: ", shouldBeInBreak);
+					console.log("inSessionAgain: ", shouldBeInSessionAgain);
 					if (timeLeft === "00:00") {
 						if (!shouldBeInBreak && !shouldBeInSessionAgain) {
 							shouldBeInBreak = true;
@@ -19916,6 +19919,7 @@ var FCC_Global =
 					}
 					else {
 						if (shouldBeInSessionAgain) {
+							console.log("Reached  session again...");
 							if (document.getElementById("timer-label").innerHTML !== breakLabel) {
 								resolve();
 							} else {
