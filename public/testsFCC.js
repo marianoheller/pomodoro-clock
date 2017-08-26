@@ -19903,9 +19903,6 @@ var FCC_Global =
 				var observer = observeElement("time-left", function (modType) {
 					var timeLeft = document.getElementById("time-left").innerHTML;
 					timeLeft = timeLeft.split("").filter( (e) => /\:|[0-9]/.exec(e) ).join("");
-					console.log("timeLeft", timeLeft);
-					console.log("inBreak: ", shouldBeInBreak);
-					console.log("inSessionAgain: ", shouldBeInSessionAgain);
 					if (timeLeft === "00:00") {
 						if (!shouldBeInBreak && !shouldBeInSessionAgain) {
 							shouldBeInBreak = true;
@@ -19933,19 +19930,20 @@ var FCC_Global =
 	      });
 
 	      it('25. When a break countdown reaches zero (NOTE: timer MUST reach 00:00), a new session countdown should begin, counting down from the value currently displayed in the id="session-length" element.', function () {
-	        this.timeout(5000);
+	        this.timeout(122000);
 	        // decrement session length and break length to the minimum (1 minute)
 	        clickButtonsById(Array(60).fill(_sesh_min));
 	        clickButtonsById(Array(60).fill(_break_min));
 	        // start the pomodoro
 			clickButtonsById([_start_stop]);
 			return new Promise(function (resolve, reject) {
-				var timeLeft = document.getElementById("time-left");
 				var shouldBeInBreak = false;
 				var shouldBeInSessionAgain = false;
 				var breakLabel = void 0;
 				var observer = observeElement("time-left", function (modType) {
-					if (timeLeft.innerHTML === "00:00") {
+					var timeLeft = document.getElementById("time-left").innerHTML;
+					timeLeft = timeLeft.split("").filter( (e) => /\:|[0-9]/.exec(e) ).join("");
+					if (timeLeft === "00:00") {
 					if (!shouldBeInBreak && !shouldBeInSessionAgain) {
 						shouldBeInBreak = true;
 					} else {
@@ -19959,8 +19957,8 @@ var FCC_Global =
 						var currentTimer = document.getElementById("timer-label");
 						var sessionLength = document.getElementById("session-length");
 						if (currentTimer.innerHTML !== breakLabel) {
-						if (+getMinutes(timeLeft.innerHTML) === +sessionLength.innerHTML) resolve();else {
-							reject(new Error("Timer has switched back to Session time, but it didn't start with the correct value: " + getMinutes(timeLeft.innerHTML) + " instead of " + sessionLength.innerHTML));
+						if (+getMinutes(timeLeft)-1  === +sessionLength.innerHTML) resolve();else {
+							reject(new Error("Timer has switched back to Session time, but it didn't start with the correct value: " + getMinutes(timeLeft) + " instead of " + sessionLength.innerHTML));
 						}
 						} else {
 						reject(new Error("Timer has reached zero but didn't switch back to Session time"));
@@ -19973,18 +19971,19 @@ var FCC_Global =
 	      });
 
 	      it("26. When a countdown reaches zero (NOTE: timer MUST reach 00:00),\n      a sound indicating that time is up should play. This should utilize an\n      HTML5 <audio> tag and have a corresponding id=\"beep\".", function () {
-	        this.timeout(5000);
+	        this.timeout(62000);
 	        // decrement session time to the minimum (1 minute)
 	        clickButtonsById(Array(60).fill(_sesh_min));
 	        // start the pomodoro
 			clickButtonsById([_start_stop]);
 			return new Promise(function (resolve, reject) {
-				var timeLeft = document.getElementById("time-left");
 				var breakLength = document.getElementById("break-length");
 				var observer = observeElement("time-left", function (modType) {
-					if (parseInt(timeLeft.innerHTML.slice(0, 2)) > 5) {
-					reject(new Error("Test timed out because Break time didn't start with the correct value: " + (parseInt(getMinutes(timeLeft.innerHTML)) + 1) + " instead of " + breakLength.innerHTML));
-					} else if (timeLeft.innerHTML === "00:00") {
+					var timeLeft = document.getElementById("time-left").innerHTML;
+					timeLeft = timeLeft.split("").filter( (e) => /\:|[0-9]/.exec(e) ).join("");
+					if (parseInt( getMinutes(timeLeft) ) > 5) {
+					reject(new Error("Test timed out because Break time didn't start with the correct value: " + (parseInt(getMinutes(timeLeft)) + 1) + " instead of " + breakLength.innerHTML));
+					} else if (timeLeft === "00:00") {
 					// note: sound has to be longer than 200 ms, or the test will fail if the sound stops before the test actually happens
 					savedSetTimeout(function (_) {
 						if (document.getElementById("beep") && !document.getElementById("beep").paused) {

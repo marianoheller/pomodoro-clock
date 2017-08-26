@@ -241,7 +241,7 @@ class Clock extends Component {
             {`
             ${this.pad(pomodoroValues.break - 1 - diffMin,2)}
             :
-            ${this.pad(60 - diffSecs,2)}
+            ${this.pad(60 - 1 - diffSecs,2)}
             `}
             </div>
           </div>
