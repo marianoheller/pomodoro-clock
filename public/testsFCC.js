@@ -19549,7 +19549,7 @@ var FCC_Global =
 	    };
 	    window.setInterval = function (fun, delay) {
 	      return savedSetInterval(fun, 30);
-	    };
+		};
 	  }
 
 	  function restoreGlobalTimerFunctions() {

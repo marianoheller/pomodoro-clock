@@ -127,10 +127,6 @@ class App extends Component {
 
 
   setPomodoroState( newPomodoroState ) {
-
-    // const newDate = new Date();
-    // 
-
     return function () {
       const newStarted = (new moment(this.state.clock.now)).subtract(500,"ms");
       const { newDiffMin, newDiffSecs } = this.calculateTimeDiff(this.state.clock.now, newStarted);
