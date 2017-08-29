@@ -56,7 +56,7 @@ class App extends Component {
 
     let newPomodoroState = this.state.pomodoroState;
     const { tickCount } = this.state.clock;
-    const newTickCount = tickCount + 1;
+    let newTickCount = tickCount + 1;
     let minClock = Math.floor( newTickCount / 60 );
     let secClock = newTickCount - ( minClock * 60 );
 
@@ -64,12 +64,16 @@ class App extends Component {
       if ( minClock >= this.state.values.session ) {
         newPomodoroState = "Resting";
         minClock = secClock = 0;
+        newTickCount = 0;
+        this.audioBeep.play();
       }
     }
     if ( this.state.pomodoroState === "Resting" ) {
       if ( minClock >= this.state.values.break ) {
         newPomodoroState = "Running";
         minClock = secClock = 0;
+        newTickCount = 0;
+        this.audioBeep.play();
       }
     }
     this.setState( {
@@ -129,7 +133,6 @@ class App extends Component {
           break;
         default:
           throw new Error(`Estado incorrecto. newPomodoroState: ${newPomodoroState}`);
-          break;
       }
 
       this.setState({

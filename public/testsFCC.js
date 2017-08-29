@@ -19751,32 +19751,8 @@ var FCC_Global =
 			});
 	      });
 
-	      it('20. If the timer is running and I click the element with id="start_stop", the countdown should pause.', function () {
+	      it('20. If the timer is running and I click the element with id="start_stop", the countdown should stop.', function () {
 	        this.timeout(4000);
-	        // start the pomodoro
-			clickButtonsById([_start_stop]);
-			var secondsBefore = getSeconds(document.getElementById("time-left").innerHTML);
-			return new Promise(function (resolve, reject) {
-				// wait 1.5 seconds then see if displayed time has changed
-				setTimeout(function (_) {
-					var secondsAfter = getSeconds(document.getElementById("time-left").innerHTML);
-					if (secondsAfter === secondsBefore) {
-					reject(new Error("Pomodoro has started but time displayed is not changing"));
-					return;
-					}
-					// Pause the pomodoro
-					clickButtonsById([_start_stop]);
-					// wait another 1.5 seconds to be sure value has not changed
-					setTimeout(function (_) {
-					var secondsAfterPause = getSeconds(document.getElementById("time-left").innerHTML);
-					if (secondsAfter === secondsAfterPause) resolve();else reject(new Error("Pomodoro has paused but time continued elapsing"));
-					}, 1500);
-				}, 1500);
-			});
-	      });
-
-	      it('21. If the timer is paused and I click the element with id="start_stop", the countdown should resume running from the point at which it was paused.', function () {
-	        this.timeout(5000);
 	        // start the pomodoro
 			clickButtonsById([_start_stop]);
 			var secondsBefore = getSeconds(document.getElementById("time-left").innerHTML);
@@ -19792,8 +19768,35 @@ var FCC_Global =
 					clickButtonsById([_start_stop]);
 					// wait another 1.5 seconds to be sure value has not changed
 					setTimeout(function (_) {
-						var secondsAfterPause = getSeconds(document.getElementById("time-left").innerHTML);
-						if (secondsAfter !== secondsAfterPause) {
+						if ( document.getElementById("time-left") ) {
+							reject(new Error("Pomodoro has stopped but time continued elapsing"));
+						}
+						else {
+							resolve();
+						}
+					}, 1500);
+				}, 1500);
+			});
+	      });
+
+	      it('21. If the timer is stopped and I click the element with id="start_stop", the countdown should resume from the start.', function () {
+	        this.timeout(5000);
+	        // start the pomodoro
+			clickButtonsById([_start_stop]);
+			var secondsBefore = getSeconds(document.getElementById("time-left").innerHTML);
+			return new Promise(function (resolve, reject) {
+				// wait 1.5 seconds then see if displayed time has changed
+				setTimeout(function (_) {
+					var secondsAfter = getSeconds(document.getElementById("time-left").innerHTML);
+					if (secondsAfter === secondsBefore) {
+						reject(new Error("Pomodoro has started but time displayed is not changing"));
+						return;
+					}
+					// Stop the pomodoro
+					clickButtonsById([_start_stop]);
+					// wait another 1.5 seconds to be sure value has not changed
+					setTimeout(function (_) {
+						if ( document.getElementById("time-left") ) {
 							reject(new Error("Pomodoro has paused but time continued elapsing"));
 							return;
 						}
@@ -19801,8 +19804,7 @@ var FCC_Global =
 						clickButtonsById([_start_stop]);
 						// wait another 1.5 seconds to be sure time is decrementing again
 						setTimeout(function (_) {
-							var secondsAfterResume = getSeconds(document.getElementById("time-left").innerHTML);
-							if (secondsAfterPause > secondsAfterResume) resolve();else reject(new Error("Pomodoro has resumed but displayed time is not changing"));
+							if ( document.getElementById("time-left") ) resolve();else reject(new Error("Pomodoro has resumed but displayed time is not changing"));
 						}, 1500);
 					}, 1500);
 				}, 1500);
@@ -19810,7 +19812,7 @@ var FCC_Global =
 	      });
 
 	      it('22. When a session countdown reaches zero (NOTE: timer MUST reach 00:00), and a new countdown begins, the element with the id of "timer-label" should display a string indicating a break has begun.', function () {
-	        this.timeout(65000);
+	        this.timeout(5000);
 	        // we decrement session time to the minimum (1 minute)
 	        clickButtonsById(Array(60).fill(_sesh_min));
 	        // start the pomodoro
@@ -19847,7 +19849,7 @@ var FCC_Global =
 	      });
 
 	      it('23. When a session countdown reaches zero (NOTE: timer MUST reach 00:00), a new break countdown should begin, counting down from the value currently displayed in the id="break-length" element.', function () {
-	        this.timeout(65000);
+	        this.timeout(5000);
 	        // we decrement session time to the minimum (1 minute)
 	        clickButtonsById(Array(60).fill(_sesh_min));
 	        // start the pomodoro
@@ -19890,7 +19892,7 @@ var FCC_Global =
 	      });
 
 	      it('24. When a break countdown reaches zero (NOTE: timer MUST reach 00:00), and a new countdown begins, the element with the id of "timer-label" should display a string indicating a session has begun.', function () {
-	        this.timeout(122000);
+	        this.timeout(5000);
 	        // we decrement session length and break length to the minimum (1 minute)
 	        clickButtonsById(Array(60).fill(_sesh_min));
 	        clickButtonsById(Array(60).fill(_break_min));
@@ -19916,7 +19918,6 @@ var FCC_Global =
 					}
 					else {
 						if (shouldBeInSessionAgain) {
-							console.log("Reached  session again...");
 							if (document.getElementById("timer-label").innerHTML !== breakLabel) {
 								resolve();
 							} else {
@@ -19930,7 +19931,7 @@ var FCC_Global =
 	      });
 
 	      it('25. When a break countdown reaches zero (NOTE: timer MUST reach 00:00), a new session countdown should begin, counting down from the value currently displayed in the id="session-length" element.', function () {
-	        this.timeout(122000);
+	        this.timeout(5000);
 	        // decrement session length and break length to the minimum (1 minute)
 	        clickButtonsById(Array(60).fill(_sesh_min));
 	        clickButtonsById(Array(60).fill(_break_min));
@@ -19957,7 +19958,10 @@ var FCC_Global =
 						var currentTimer = document.getElementById("timer-label");
 						var sessionLength = document.getElementById("session-length");
 						if (currentTimer.innerHTML !== breakLabel) {
-						if (+getMinutes(timeLeft)-1  === +sessionLength.innerHTML) resolve();else {
+						if (+getMinutes(timeLeft)+1  === +sessionLength.innerHTML) {
+							resolve();
+						}
+						else {
 							reject(new Error("Timer has switched back to Session time, but it didn't start with the correct value: " + getMinutes(timeLeft) + " instead of " + sessionLength.innerHTML));
 						}
 						} else {
@@ -19971,7 +19975,7 @@ var FCC_Global =
 	      });
 
 	      it("26. When a countdown reaches zero (NOTE: timer MUST reach 00:00),\n      a sound indicating that time is up should play. This should utilize an\n      HTML5 <audio> tag and have a corresponding id=\"beep\".", function () {
-	        this.timeout(62000);
+	        this.timeout(5000);
 	        // decrement session time to the minimum (1 minute)
 	        clickButtonsById(Array(60).fill(_sesh_min));
 	        // start the pomodoro
@@ -20001,15 +20005,18 @@ var FCC_Global =
 	        FCC_Global.assert.isAbove(document.getElementById('beep').duration, 1, "Audio element with id=\"beep\" is not at least 1 second long.");
 	      });
 
-	      it("28. The audio element with id of \"beep\" must stop playing and be\n      rewound to the beginning when the element with the id of \"reset\" is\n      clicked.", function () {
-	        var audioElem = document.getElementById('beep');
+	      it("28. The audio element with id of \"beep\" must stop playing and be\n      rewound to the beginning when the element with the id of \"reset\" is\n      clicked.", function (done) {
+			var audioElem = document.getElementById('beep');
 
-	        audioElem.play();
-	        resetTimer();
+			setTimeout(function () {      
+				audioElem.play();
+				resetTimer();
 
-	        FCC_Global.assert.isTrue(audioElem.paused, "Audio element was not stopped when reset was clicked.");
-
-	        FCC_Global.assert.equal(0, audioElem.currentTime, "Audio element was not rewound when reset was clicked. HINT: use the\n          currentTime property of the audio element to rewind.");
+				FCC_Global.assert.isTrue(audioElem.paused, "Audio element was not stopped when reset was clicked.");
+				FCC_Global.assert.equal(0, audioElem.currentTime, "Audio element was not rewound when reset was clicked. HINT: use the\n          currentTime property of the audio element to rewind.");
+				done();
+			 }, 150);		
+	        
 	      });
 	    }); // END #Tests
 	  }); // END #PomodoroClockTests
