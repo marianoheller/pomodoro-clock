@@ -21,6 +21,7 @@ class App extends Component {
         started: new moment(),
         diffMin: 0,
         diffSecs: 0,
+        intervalID: null,
       }
     }
   }
@@ -95,7 +96,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    setInterval(this.clockTick.bind(this), 1000);
+    //const intervalID = setInterval(this.clockTick.bind(this), 1000);
   }
 
   getValuesSetters() {
@@ -130,6 +131,22 @@ class App extends Component {
     return function () {
       const newStarted = (new moment(this.state.clock.now)).subtract(500,"ms");
       const { newDiffMin, newDiffSecs } = this.calculateTimeDiff(this.state.clock.now, newStarted);
+      const { intervalID } = this.state.clock;
+      let newIntervalID = intervalID;
+
+      clearInterval(intervalID);
+      switch (newPomodoroState) {
+        case "Resting":
+        case "Running":
+          newIntervalID = setInterval(this.clockTick.bind(this), 1000);
+          break;
+        case "Stopped":
+          newIntervalID = null;
+          break;
+        default:
+          throw new Error(`Estado incorrecto. newPomodoroState: ${newPomodoroState}`);
+          break;
+      }
 
       this.setState({
         ...this.state,
@@ -138,7 +155,8 @@ class App extends Component {
           ...this.state.clock,
           started: newStarted,
           diffMin: newDiffMin,
-          diffSecs: newDiffSecs
+          diffSecs: newDiffSecs,
+          intervalID: newIntervalID,
         }
       });
     }.bind(this);
