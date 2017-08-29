@@ -19545,10 +19545,10 @@ var FCC_Global =
 
 	  function hackGlobalTimerFunctions() {
 	    window.setTimeout = function (fun, delay) {
-	      return savedSetTimeout(fun, 30);
+    		return savedSetTimeout(fun, 30);
 	    };
 	    window.setInterval = function (fun, delay) {
-	      return savedSetInterval(fun, 30);
+	    	return savedSetInterval(fun, 30);
 		};
 	  }
 

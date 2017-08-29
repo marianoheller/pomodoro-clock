@@ -19,8 +19,8 @@ class App extends Component {
       clock: {
         now: new moment(),
         started: new moment(),
-        diffMin: 0,
-        diffSecs: 0,
+        minClock: 0,
+        secClock: 0,
         intervalID: null,
       }
     }
@@ -36,68 +36,54 @@ class App extends Component {
         break: 5
       },
       clock: {
-        now: new moment(),
-        started: new moment(),
-        diffMin: 0,
-        diffSecs: 0,
+        tickCount: 0,
+        minClock: 0,
+        secClock: 0,
+        intervalID: null,
       }
     })
   }
 
   calculateTimeDiff( date1, date2) {
 
-    const newDiffMin = date1.diff(date2, "minutes");
+    const newminClock = date1.diff(date2, "minutes");
     const newDiffSecs = date1.diff(date2, "seconds") % 60;
 
-    //console.log("Calculated", date1.diff(date2) );
-
-    return { newDiffMin, newDiffSecs };
+    return { newminClock, newDiffSecs };
   }
 
   clockTick() {
-    const newDate = new moment();
 
     let newPomodoroState = this.state.pomodoroState;
-    let newStartedDate = this.state.clock.started;
+    const { tickCount } = this.state.clock;
+    const newTickCount = tickCount + 1;
+    let minClock = Math.floor( newTickCount / 60 );
+    let secClock = newTickCount - ( minClock * 60 );
 
-    let { newDiffMin, newDiffSecs } = this.calculateTimeDiff(newDate, this.state.clock.started);
     if ( this.state.pomodoroState === "Running" ) {
-      if ( newDiffMin >= this.state.values.session ) {
+      if ( minClock >= this.state.values.session ) {
         newPomodoroState = "Resting";
-        newStartedDate = (new moment()).subtract(500, "ms");
-        const timeDiffsAux = this.calculateTimeDiff(newDate, newStartedDate);
-        newDiffMin = timeDiffsAux.newDiffMin;
-        newDiffSecs = timeDiffsAux.newDiffSecs;
+        minClock = secClock = 0;
       }
     }
     if ( this.state.pomodoroState === "Resting" ) {
-      if ( newDiffMin >= this.state.values.break ) {
+      if ( minClock >= this.state.values.break ) {
         newPomodoroState = "Running";
-        newStartedDate = (new moment()).subtract(500, "ms");
-        const timeDiffsAux = this.calculateTimeDiff(newDate, newStartedDate);
-        newDiffMin = timeDiffsAux.newDiffMin;
-        newDiffSecs = timeDiffsAux.newDiffSecs;
+        minClock = secClock = 0;
       }
     }
-    //console.log("Tick", newPomodoroState, newDiffMin, newDiffSecs);
-    
     this.setState( {
       ...this.state,
       pomodoroState: newPomodoroState,
       clock: {
         ...this.state.clock,
-        now: newDate, //tick
-        started: newStartedDate,
-        diffMin: newDiffMin,
-        diffSecs: newDiffSecs
+        tickCount: newTickCount,
+        minClock: minClock,
+        secClock: secClock
       }
     });
-    
   }
 
-  componentDidMount() {
-    //const intervalID = setInterval(this.clockTick.bind(this), 1000);
-  }
 
   getValuesSetters() {
     const setSession = function (val) {
@@ -129,8 +115,6 @@ class App extends Component {
 
   setPomodoroState( newPomodoroState ) {
     return function () {
-      const newStarted = (new moment(this.state.clock.now)).subtract(500,"ms");
-      const { newDiffMin, newDiffSecs } = this.calculateTimeDiff(this.state.clock.now, newStarted);
       const { intervalID } = this.state.clock;
       let newIntervalID = intervalID;
 
@@ -153,9 +137,9 @@ class App extends Component {
         pomodoroState: newPomodoroState,
         clock: {
           ...this.state.clock,
-          started: newStarted,
-          diffMin: newDiffMin,
-          diffSecs: newDiffSecs,
+          tickCount: 0,
+          minClock: 0,
+          secClock: 0,
           intervalID: newIntervalID,
         }
       });
@@ -221,10 +205,10 @@ class Clock extends Component {
 
   getClockCount() {
     let ret = -1;
-    const { diffMin, diffSecs } = this.props.clock;
+    const { minClock, secClock } = this.props.clock;
     const { pomodoroValues } = this.props;
 
-    //console.log("Render", this.props.pomodoroState, diffMin, diffSecs);
+    //console.log("Render", this.props.pomodoroState, minClock, secClock);
 
     switch( this.props.pomodoroState ) {
       case "Running":
@@ -236,9 +220,9 @@ class Clock extends Component {
               className="clock-number" 
             >
             {`
-            ${this.pad(pomodoroValues.session - 1 - diffMin,2)}
+            ${this.pad(pomodoroValues.session - 1 - minClock,2)}
             :
-            ${this.pad(60  - 1 - diffSecs,2)}
+            ${this.pad(60  - 1 - secClock,2)}
             `}
             </div>
           </div>
@@ -253,9 +237,9 @@ class Clock extends Component {
               className="clock-number" 
             >
             {`
-            ${this.pad(pomodoroValues.break - 1 - diffMin,2)}
+            ${this.pad(pomodoroValues.break - 1 - minClock,2)}
             :
-            ${this.pad(60 - 1 - diffSecs,2)}
+            ${this.pad(60 - 1 - secClock,2)}
             `}
             </div>
           </div>
